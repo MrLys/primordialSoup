@@ -13,6 +13,7 @@ import java.util.ArrayList;
 public class WorldGfx extends JPanel {
     private final World world;
     private final ArrayList<CreatureGfx> creatureGfxs;
+    private final List<FoodGfx> foodGfxs = new ArrayList<>();
     private final CreatureService service;
     private static final long birthAge = 150;
     private static int counter = 0;
@@ -24,6 +25,10 @@ public class WorldGfx extends JPanel {
            creatureGfxes.add(new CreatureGfx(c));
         }
         this.creatureGfxs = creatureGfxes;
+
+        for (Food f : world.getFood()) {
+            foodGfxs.add(new FoodGfx(f));
+        }
     }
 
     @Override
@@ -31,6 +36,11 @@ public class WorldGfx extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        for (FoodGfx foodGfx : foodGfxs) {
+            foodGfx.draw(g2d);
+        }
+
         for (CreatureGfx creatureGfx : creatureGfxs) {
             creatureGfx.draw(g2d);
         }

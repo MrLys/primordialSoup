@@ -43,8 +43,10 @@ public class Main {
         ArrayList<Creature> creatures = new ArrayList<>();
         ArrayList<Food> foodList = new ArrayList<>();
         Creature creature1 = service.createCreature(1);
+        Creature creature2 = service.createCreature(2);
         //Creature creature2 = service.createCreature(2);
         creatures.add(creature1);
+        creatures.add(creature2);
         foodList.add(new Food((int) (Math.random()*100)));
         foodList.add(new Food((int) (Math.random()*100)));
         foodList.add(new Food((int) (Math.random()*100)));

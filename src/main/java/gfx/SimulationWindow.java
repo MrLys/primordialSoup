@@ -5,14 +5,14 @@ import java.awt.*;
 
 public class SimulationWindow extends JFrame {
 
-    public SimulationWindow(String title) throws HeadlessException {
+    public SimulationWindow(String title, WorldGfx worldGfx) throws HeadlessException {
         super(title);
-        init();
+        init(worldGfx);
     }
 
-    private void init() {
-        add(new Surface());
-        setSize(800, 600);
+    private void init(WorldGfx worldGfx) {
+        add(worldGfx);
+        setSize(1200, 800);
         setLocationRelativeTo(null); // place in center of screen
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }

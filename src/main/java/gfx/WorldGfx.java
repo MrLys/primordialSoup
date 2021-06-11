@@ -2,9 +2,10 @@ package gfx;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
 
-public class Surface extends JPanel {
+public class WorldGfx extends JPanel {
+
+    CreatureGfx creatureGfx = new CreatureGfx();
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -12,11 +13,12 @@ public class Surface extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        BasicStroke stroke = new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-        g2d.setStroke(stroke);
+        creatureGfx.draw(g2d);
+    }
 
-        Ellipse2D.Float body = new Ellipse2D.Float(100, 100, 33, 33);
-
-        g2d.draw(body);
+    public void tick() {
+        creatureGfx.tick(0.5, 0);
+        //repaint(creatureGfx.getBounds());
+        repaint();
     }
 }

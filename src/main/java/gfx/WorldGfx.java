@@ -1,23 +1,25 @@
 package gfx;
 
 import model.Creature;
+import model.Food;
 import model.World;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import service.CreatureService;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class WorldGfx extends JPanel {
     private final World world;
-    private final List<CreatureGfx> creatureGfxs;
+    private final ArrayList<CreatureGfx> creatureGfxs;
     private final CreatureService service;
-
+    private static final long birthAge = 150;
+    private static int counter = 0;
     public WorldGfx(World world, CreatureService service) {
         this.world = world;
         this.service = service;
-        List<CreatureGfx> creatureGfxes = new ArrayList<>();
+        ArrayList<CreatureGfx> creatureGfxes = new ArrayList<>();
         for (Creature c: world.getCreatures()) {
            creatureGfxes.add(new CreatureGfx(c));
         }
@@ -35,16 +37,64 @@ public class WorldGfx extends JPanel {
     }
 
     public void tick() {
+        ArrayList<CreatureGfx> deadCreatures = new ArrayList<>();
+        ArrayList<CreatureGfx> newCreatues = new ArrayList<>();
         for (CreatureGfx creatureGfx : creatureGfxs) {
+            ArrayList<Food> eatenFood = new ArrayList<>();
+            for (Food food : world.getFood()) {
+                if (canEat(creatureGfx,food)) {
+                    eatFood(creatureGfx, food);
+                    eatenFood.add(food);
+                }
+            }
+            removeFood(eatenFood);
+            if (creatureGfx.getCreature().getAge() == birthAge) {
+                newCreatues.add(giveBirth(creatureGfx.getCreature()));
+            }
+            if (creatureGfx.getCreature().getStarvationIndex() > 50*10) {
+               deadCreatures.add(creatureGfx);
+            }
+
             service.calculateOutputs(creatureGfx.getCreature());
-            System.out.println(world.getCreatures().get(0).equals(creatureGfx.getCreature()));
-            double diff = creatureGfx.getCreature().getLeftMuscle().getOutput() -creatureGfx.getCreature().getRightMuscle().getOutput();
+            double diff = creatureGfx.getCreature().getLeftMuscle().getOutput() - creatureGfx.getCreature().getRightMuscle().getOutput();
+            System.out.println("worldgfx diff: " +diff);
             creatureGfx.tick(diff*5, 0);
             creatureGfx.getCreature().getLeftAntenna().setInput(Math.random());
             creatureGfx.getCreature().getRightAntenna().setInput(Math.random());
             creatureGfx.getCreature().getEyes().setInput(Math.random());
+            int newStarvationIndex = creatureGfx.getCreature().getStarvationIndex() + 10;
+            creatureGfx.getCreature().setStarvationIndex(newStarvationIndex);
+            creatureGfx.getCreature().incrementAge();
         }
+        removeCreature(deadCreatures);
         //repaint(creatureGfx.getBounds());
         repaint();
+    }
+
+    private CreatureGfx giveBirth(Creature creature) {
+        System.out.println("giving birth!");
+        MultiLayerNetwork net = creature.getBrain().getNet().clone();
+        service.mutate(net);
+        Creature newCreature = service.createCreature(counter++);
+        return new CreatureGfx(newCreature);
+    }
+
+    private void eatFood(CreatureGfx creatureGfx, Food food) {
+        System.out.println(creatureGfx.getCreature().getId() + " ate food!");
+        int starvationIndatex = creatureGfx.getCreature().getStarvationIndex() - food.getFoodValue();
+        creatureGfx.getCreature().setStarvationIndex(starvationIndatex);
+    }
+
+    private boolean canEat(CreatureGfx creatureGfx, Food food) {
+        return Math.random() > 0.4;
+    }
+    private void removeCreature(ArrayList<CreatureGfx> creatureGfxes) {
+        creatureGfxes.forEach(d -> {
+            System.out.println("Create " + d.getCreature().getId() + " is dead");
+            world.removeCreature(d.getCreature());
+        });
+    }
+    private void removeFood(ArrayList<Food> food) {
+        food.forEach(world::removeFood);
     }
 }

@@ -4,6 +4,10 @@ import model.World;
 
 import gfx.SimulationWindow;
 import gfx.WorldGfx;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.api.preprocessor.NormalizerMinMaxScaler;
+import org.nd4j.linalg.factory.Nd4j;
 import service.CreatureService;
 
 import javax.swing.*;
@@ -11,21 +15,40 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Random;
 
 public class Main {
 
+    public void test() {
+        CreatureService service = new CreatureService();
+        Creature creature = service.createCreature(0);
+        MultiLayerNetwork net = creature.getBrain().getNet();
+        Random rand = new Random();
+        ArrayList<String> keys = new ArrayList<>(net.paramTable().keySet());
+        String key = keys.get(rand.nextInt(net.paramTable().keySet().size()));
+        while (key.contains("b")) {
+            key = keys.get(rand.nextInt(net.paramTable().keySet().size()));
+        }
+        INDArray array = net.paramTable().get(key);
+        System.out.println(array);
+        double mutation = (Math.random()+0.1) * 10;
+        array.getRow(rand.nextInt(array.rows())).muli(mutation);
+        net.setParam(key, array);
+        System.out.println(array);
+    }
     public static void main(String[] args) {
-
+        //new Main().test();
         CreatureService service = new CreatureService();
         //service.printInitialWeights();
+        ArrayList<Creature> creatures = new ArrayList<>();
+        ArrayList<Food> foodList = new ArrayList<>();
         Creature creature1 = service.createCreature(1);
         //Creature creature2 = service.createCreature(2);
-        List<Creature> creatures = Arrays.asList(creature1);
-        Food food = new Food();
-        List<Food> foodList = new ArrayList<>();
-        World world = new World(creatures,foodList);
+        creatures.add(creature1);
+        foodList.add(new Food((int) (Math.random()*100)));
+        foodList.add(new Food((int) (Math.random()*100)));
+        foodList.add(new Food((int) (Math.random()*100)));
+        World world = new World(creatures, foodList);
         WorldGfx worldGfx = new WorldGfx(world, service);
 
         SimulationTickListener tickListener = new SimulationTickListener(worldGfx);
@@ -49,9 +72,10 @@ public class Main {
             }
         });
 
-        new Timer(1000, tickListener).start();
+        new Timer(50, tickListener).start();
     }
 }
+
 
 class SimulationTickListener implements ActionListener {
     private WorldGfx worldGfx;

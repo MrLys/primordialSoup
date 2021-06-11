@@ -31,14 +31,14 @@ public class CreatureGfx {
     private static final double DRAW_ANGLE_LEFT_ANTENNA = -40;
     private static final double DRAW_ANGLE_RIGHT_ANTENNA = 40;
 
-    Ellipse2D.Double body;
-    Line2D.Double tail;
-    Line2D.Double leftAntenna;
-    Line2D.Double rightAntenna;
+    private final Ellipse2D.Double body;
+    private final Line2D.Double tail;
+    private final Line2D.Double leftAntenna;
+    private final Line2D.Double rightAntenna;
 
-    BasicStroke limbsStroke = new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
-    Color limbsColor = new Color(100, 200, 100);
-    Color bodyColor = new Color(255, 100, 100);
+    private final BasicStroke limbsStroke = new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+    private final Color limbsColor = new Color(100, 200, 100);
+    private final Color bodyColor = new Color(255, 100, 100);
 
     Random rand = new Random();
 

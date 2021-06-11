@@ -1,6 +1,7 @@
 package gfx;
 
 import model.Creature;
+import model.Food;
 import model.World;
 import service.CreatureService;
 
@@ -12,6 +13,7 @@ import java.util.List;
 public class WorldGfx extends JPanel {
     private final World world;
     private final List<CreatureGfx> creatureGfxs;
+    private final List<FoodGfx> foodGfxs = new ArrayList<>();
     private final CreatureService service;
 
     public WorldGfx(World world, CreatureService service) {
@@ -22,6 +24,10 @@ public class WorldGfx extends JPanel {
            creatureGfxes.add(new CreatureGfx(c));
         }
         this.creatureGfxs = creatureGfxes;
+
+        for (Food f : world.getFood()) {
+            foodGfxs.add(new FoodGfx(f));
+        }
     }
 
     @Override
@@ -29,6 +35,11 @@ public class WorldGfx extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        for (FoodGfx foodGfx : foodGfxs) {
+            foodGfx.draw(g2d);
+        }
+
         for (CreatureGfx creatureGfx : creatureGfxs) {
             creatureGfx.draw(g2d);
         }

@@ -23,7 +23,7 @@ public class Main {
         Creature creature2 = service.createCreature(2);
         List<Creature> creatures = Arrays.asList(creature1, creature2);
         Food food = new Food();
-        List<Food> foodList = new ArrayList<>();
+        List<Food> foodList = Arrays.asList(food);
         World world = new World(creatures,foodList);
         WorldGfx worldGfx = new WorldGfx(world, service);
 

@@ -17,6 +17,7 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
+
         CreatureService service = new CreatureService();
         //service.printInitialWeights();
         Creature creature1 = service.createCreature(1);
@@ -48,7 +49,7 @@ public class Main {
             }
         });
 
-        new Timer(100, tickListener).start();
+        new Timer(1000, tickListener).start();
     }
 }
 

@@ -204,9 +204,14 @@ public class CreatureService {
         return Nd4j.create(new double[][]{new double[]{creature.getLeftAntenna().getInput(), creature.getRightAntenna().getInput(), creature.getEyes().getInput()}});
     }
     private double calculateRotationalMuscleData(INDArray indArray) {
+        System.out.println(indArray);
         INDArray right = indArray.getColumn(RIGHT_ARM);
+        System.out.println(right);
+        System.out.println("r"+right.getDouble());
         INDArray left = indArray.getColumn(LEFT_ARM);
-        return right.getDouble(0) - left.getDouble(0);
+        System.out.println(left);
+        System.out.println("l"+left.getDouble());
+        return right.getDouble() - left.getDouble();
     }
 
     private double calculateRectilinearMuscleData(INDArray indArray) {
@@ -219,14 +224,8 @@ public class CreatureService {
         INDArray indArray = getSensoryData(creature);
         INDArray output = net.output(indArray);
 
-        double rotationAngle = calculateRotationalMuscleData(output);
-        RotationalMuscle muscleToWork;
-        if (rotationAngle > 0) {
-            muscleToWork = creature.getRightMuscle();
-        } else {
-            muscleToWork = creature.getLeftMuscle();
-        }
-        muscleToWork.setOutput(rotationAngle);
+        creature.getLeftMuscle().setOutput(output.getColumn(LEFT_ARM).getDouble());
+        creature.getRightMuscle().setOutput(output.getColumn(RIGHT_ARM).getDouble());
         RectilinearMuscle forwardMuscle = creature.getRectilinearMuscle();
         forwardMuscle.setOutput(calculateRectilinearMuscleData(output));
         System.out.println(creature.getRightMuscle().getOutput());

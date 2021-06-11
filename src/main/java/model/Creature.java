@@ -9,6 +9,7 @@ public class Creature {
     private final RectilinearMuscle rectilinearMuscle;
     private final RotationalMuscle rightMuscle;
     private final RotationalMuscle leftMuscle;
+    private int starvationIndex = 0;
     private final int id;
     public static final String saveLocation = "src/main/resources/creature";
 

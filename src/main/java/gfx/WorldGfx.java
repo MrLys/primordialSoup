@@ -38,13 +38,11 @@ public class WorldGfx extends JPanel {
         for (CreatureGfx creatureGfx : creatureGfxs) {
             service.calculateOutputs(creatureGfx.getCreature());
             System.out.println(world.getCreatures().get(0).equals(creatureGfx.getCreature()));
-            if (creatureGfx.getCreature().getLeftMuscle().getOutput() > 0) {
-                creatureGfx.tick(creatureGfx.getCreature().getLeftMuscle().getOutput(), 0);
-            } else {
-                creatureGfx.tick(creatureGfx.getCreature().getRightMuscle().getOutput(), 0);
-            }
+            double diff = creatureGfx.getCreature().getLeftMuscle().getOutput() -creatureGfx.getCreature().getRightMuscle().getOutput();
+            creatureGfx.tick(diff*5, 0);
             creatureGfx.getCreature().getLeftAntenna().setInput(Math.random());
             creatureGfx.getCreature().getRightAntenna().setInput(Math.random());
+            creatureGfx.getCreature().getEyes().setInput(Math.random());
         }
         //repaint(creatureGfx.getBounds());
         repaint();

@@ -1,4 +1,5 @@
 package model;
 
-public class RotationalMuscle extends Muscle{
+public class RotationalMuscle extends OutputNode {
+
 }

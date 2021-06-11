@@ -1,4 +1,4 @@
 package model;
 
-public class RectilinearMuscle extends Muscle{
+public class RectilinearMuscle extends OutputNode {
 }

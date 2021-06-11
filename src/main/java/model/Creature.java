@@ -1,36 +1,31 @@
 package model;
 
-import java.util.List;
 
 public class Creature {
     private final Brain brain;
     private final Eyes eyes;
-    private final List<Nose> noses;
+    private final Antenna leftAntenna;
+    private final Antenna rightAntenna;
     private final RectilinearMuscle rectilinearMuscle;
-    private final List<RotationalMuscle> rotationalMuscle;
+    private final RotationalMuscle rightMuscle;
+    private final RotationalMuscle leftMuscle;
     private final int id;
     public static final String saveLocation = "src/main/resources/creature";
 
-    public Creature(Brain brain, Eyes eyes, List<Nose> noses, RectilinearMuscle rectilinearMuscle, List<RotationalMuscle> rotationalMuscle, int id) {
+    public Creature(Brain brain, Eyes eyes, Antenna leftAntenna, Antenna rightAntenna, RectilinearMuscle rectilinearMuscle, RotationalMuscle rightMuscle, RotationalMuscle leftMuscle, int id) {
         this.brain = brain;
         this.eyes = eyes;
-        this.noses = noses;
+        this.leftAntenna = leftAntenna;
+        this.rightAntenna = rightAntenna;
         this.rectilinearMuscle = rectilinearMuscle;
-        this.rotationalMuscle = rotationalMuscle;
+        this.rightMuscle = rightMuscle;
+        this.leftMuscle = leftMuscle;
         this.id = id;
     }
 
 
-    public List<RotationalMuscle> getRotationalMuscle() {
-        return rotationalMuscle;
-    }
-
     public RectilinearMuscle getRectilinearMuscle() {
         return rectilinearMuscle;
-    }
-
-    public List<Nose> getNoses() {
-        return noses;
     }
 
     public Eyes getEyes() {
@@ -49,4 +44,33 @@ public class Creature {
         return saveLocation;
     }
 
+    public RotationalMuscle getRightMuscle() {
+        return rightMuscle;
+    }
+
+    public RotationalMuscle getLeftMuscle() {
+        return leftMuscle;
+    }
+
+    public Antenna getRightAntenna() {
+        return rightAntenna;
+    }
+
+    public Antenna getLeftAntenna() {
+        return leftAntenna;
+    }
+
+    @Override
+    public String toString() {
+        return "Creature{" +
+            "brain=" + brain +
+            ", eyes=" + eyes +
+            ", leftAntenna=" + leftAntenna +
+            ", rightAntenna=" + rightAntenna +
+            ", rectilinearMuscle=" + rectilinearMuscle +
+            ", rightMuscle=" + rightMuscle +
+            ", leftMuscle=" + leftMuscle +
+            ", id=" + id +
+            '}';
+    }
 }

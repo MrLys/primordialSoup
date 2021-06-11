@@ -20,8 +20,8 @@ public class Main {
         CreatureService service = new CreatureService();
         //service.printInitialWeights();
         Creature creature1 = service.createCreature(1);
-        //Creature creature2 = service.createCreature(2);
-        List<Creature> creatures = Arrays.asList(creature1);
+        Creature creature2 = service.createCreature(2);
+        List<Creature> creatures = Arrays.asList(creature1, creature2);
         Food food = new Food();
         List<Food> foodList = new ArrayList<>();
         World world = new World(creatures,foodList);

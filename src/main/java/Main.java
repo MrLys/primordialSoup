@@ -1,5 +1,15 @@
+import gfx.SimulationWindow;
+
+import java.awt.EventQueue;
+
 public class Main {
     public static void main(String[] args) {
-        System.out.println("hello world");
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                SimulationWindow window = new SimulationWindow("prims - primordial soup simulator");
+                window.setVisible(true);
+            }
+        });
     }
 }

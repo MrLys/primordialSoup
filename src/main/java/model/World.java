@@ -26,4 +26,12 @@ public class World {
     public void removeCreature(Creature deadCreature) {
         creatures.remove(deadCreature);
     }
+
+    public void addFood(Food newFood) {
+        this.food.add(newFood);
+    }
+
+    public void addCreature(Creature newCreature) {
+        this.creatures.add(newCreature);
+    }
 }

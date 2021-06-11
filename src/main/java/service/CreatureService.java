@@ -221,10 +221,28 @@ public class CreatureService {
         creature.getLeftMuscle().setOutput(output.getColumn(LEFT_ARM).getDouble());
         creature.getRightMuscle().setOutput(output.getColumn(RIGHT_ARM).getDouble());
 
-        System.out.println("service diff: " +(creature.getRightMuscle().getOutput() - creature.getLeftMuscle().getOutput()));
-        System.out.println("left " + creature.getLeftMuscle().getOutput());
-        System.out.println("right"+ creature.getRightMuscle().getOutput());
         RectilinearMuscle forwardMuscle = creature.getRectilinearMuscle();
         forwardMuscle.setOutput(calculateRectilinearMuscleData(output));
+    }
+
+    public int[] calculateColor(Creature creature) {
+        MultiLayerNetwork net = creature.getBrain().getNet();
+
+        Iterator paramap_iterator = net.paramTable().entrySet().iterator();
+        INDArray colorArr = null;
+        while(paramap_iterator.hasNext()) {
+            Map.Entry<String, INDArray> me = (Map.Entry<String, INDArray>) paramap_iterator.next();
+            if (colorArr == null) {
+                colorArr = me.getValue();
+            } else {
+                colorArr.add(me.getValue());
+            }
+        }
+        INDArray a1 = colorArr.getRow(0).add(colorArr.getRow(1)).add(colorArr.getRow(0));
+        return Arrays.stream(a1.toDoubleVector()).mapToInt(this::sig).toArray();
+
+    }
+    public int sig(double x) {
+        return (int) ((1 / (1 + Math.exp(-x)))*255);
     }
 }

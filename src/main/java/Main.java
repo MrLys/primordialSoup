@@ -19,23 +19,7 @@ import java.util.Random;
 
 public class Main {
 
-    public void test() {
-        CreatureService service = new CreatureService();
-        Creature creature = service.createCreature(0);
-        MultiLayerNetwork net = creature.getBrain().getNet();
-        Random rand = new Random();
-        ArrayList<String> keys = new ArrayList<>(net.paramTable().keySet());
-        String key = keys.get(rand.nextInt(net.paramTable().keySet().size()));
-        while (key.contains("b")) {
-            key = keys.get(rand.nextInt(net.paramTable().keySet().size()));
-        }
-        INDArray array = net.paramTable().get(key);
-        System.out.println(array);
-        double mutation = (Math.random()+0.1) * 10;
-        array.getRow(rand.nextInt(array.rows())).muli(mutation);
-        net.setParam(key, array);
-        System.out.println(array);
-    }
+
     public static void main(String[] args) {
         //new Main().test();
         CreatureService service = new CreatureService();
@@ -47,9 +31,9 @@ public class Main {
         //Creature creature2 = service.createCreature(2);
         creatures.add(creature1);
         creatures.add(creature2);
-        foodList.add(new Food((int) (Math.random()*100)));
-        foodList.add(new Food((int) (Math.random()*100)));
-        foodList.add(new Food((int) (Math.random()*100)));
+        foodList.add(new Food(50));
+        foodList.add(new Food(50));
+        foodList.add(new Food(50));
         World world = new World(creatures, foodList);
         WorldGfx worldGfx = new WorldGfx(world, service);
 
@@ -75,6 +59,12 @@ public class Main {
         });
 
         new Timer(50, tickListener).start();
+    }
+
+    private void test() {
+        CreatureService service = new CreatureService();
+        Creature c = service.createCreature(0);
+        service.calculateColor(c);
     }
 }
 

@@ -12,4 +12,11 @@ public class Brain {
     public MultiLayerNetwork getNet() {
         return net;
     }
+
+    @Override
+    public String toString() {
+        return "Brain{" +
+            "net=" + net +
+            '}';
+    }
 }

@@ -1,5 +1,7 @@
 package gfx;
 
+import model.Creature;
+
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -12,7 +14,7 @@ import static java.lang.Math.cos;
  * Default orientation is facing up.
  */
 public class CreatureGfx {
-
+    private final Creature creature;
     /**
      * The angle the creature is facing in degrees.
      * 0 degrees corresponds to facing right, and 90 degrees is facing down.
@@ -32,7 +34,9 @@ public class CreatureGfx {
     Color limbsColor = new Color(100, 200, 100);
     Color bodyColor = new Color(255, 100, 100);
 
-    public CreatureGfx() {
+    public CreatureGfx(Creature creature) {
+        this.creature = creature;
+
         Point2D.Double origin = new Point2D.Double(
                 body.x + (body.width / 2),
                 body.y + (body.height / 2)
@@ -95,5 +99,9 @@ public class CreatureGfx {
 
     public Rectangle getBounds() {
         return body.getBounds();
+    }
+
+    public Creature getCreature() {
+        return creature;
     }
 }

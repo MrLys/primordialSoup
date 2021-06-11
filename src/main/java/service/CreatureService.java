@@ -1,3 +1,5 @@
+package service;
+
 import model.*;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -116,7 +118,7 @@ public class CreatureService {
         MultiLayerConfiguration conf = getConf();
         MultiLayerNetwork net = new MultiLayerNetwork(conf);
         net.init();
-        if (Math.random() > 0.1) {
+        if (Math.random() > 0.9) {
             System.out.println("mutation!");
             NormalizerMinMaxScaler scaler = new NormalizerMinMaxScaler();
             int neuron = selectRandomNeuron(Math.random());
@@ -199,16 +201,12 @@ public class CreatureService {
     }
 
     private INDArray getSensoryData(Creature creature) {
-        return Nd4j.create(new double[][]{new double[]{creature.getLeftAntenna().getInput(), creature.getRightAntenna().getInput(),creature.getEyes().getInput()}});
+        return Nd4j.create(new double[][]{new double[]{creature.getLeftAntenna().getInput(), creature.getRightAntenna().getInput(), creature.getEyes().getInput()}});
     }
     private double calculateRotationalMuscleData(INDArray indArray) {
         INDArray right = indArray.getColumn(RIGHT_ARM);
         INDArray left = indArray.getColumn(LEFT_ARM);
-        double diff = right.getDouble(0) - left.getDouble(0);
-        if (diff < 0.01) {
-           return 0;
-        }
-        return diff;
+        return right.getDouble(0) - left.getDouble(0);
     }
 
     private double calculateRectilinearMuscleData(INDArray indArray) {
@@ -220,6 +218,7 @@ public class CreatureService {
         MultiLayerNetwork net = creature.getBrain().getNet();
         INDArray indArray = getSensoryData(creature);
         INDArray output = net.output(indArray);
+
         double rotationAngle = calculateRotationalMuscleData(output);
         RotationalMuscle muscleToWork;
         if (rotationAngle > 0) {
@@ -230,6 +229,7 @@ public class CreatureService {
         muscleToWork.setOutput(rotationAngle);
         RectilinearMuscle forwardMuscle = creature.getRectilinearMuscle();
         forwardMuscle.setOutput(calculateRectilinearMuscleData(output));
-        System.out.println(creature);
+        System.out.println(creature.getRightMuscle().getOutput());
+        System.out.println(creature.getLeftMuscle().getOutput());
     }
 }

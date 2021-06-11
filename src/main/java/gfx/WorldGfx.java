@@ -93,6 +93,7 @@ public class WorldGfx extends JPanel {
             System.out.println("Create " + d.getCreature().getId() + " is dead");
             world.removeCreature(d.getCreature());
         });
+        creatureGfxs.removeAll(creatureGfxes);
     }
     private void removeFood(ArrayList<Food> food) {
         food.forEach(world::removeFood);

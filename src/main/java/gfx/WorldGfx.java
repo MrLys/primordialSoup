@@ -3,25 +3,26 @@ package gfx;
 import model.Creature;
 import model.Food;
 import model.World;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import service.CreatureService;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class WorldGfx extends JPanel {
     private final World world;
-    private final List<CreatureGfx> creatureGfxs;
-    private final List<FoodGfx> foodGfxs = new ArrayList<>();
+    private final ArrayList<CreatureGfx> creatureGfxs;
+    private final ArrayList<FoodGfx> foodGfxs = new ArrayList<>();
     private final CreatureService service;
-
+    private static final long birthAge = 500;
+    private static int counter = 2;
     public WorldGfx(World world, CreatureService service) {
         this.world = world;
         this.service = service;
-        List<CreatureGfx> creatureGfxes = new ArrayList<>();
+        ArrayList<CreatureGfx> creatureGfxes = new ArrayList<>();
         for (Creature c: world.getCreatures()) {
-           creatureGfxes.add(new CreatureGfx(c));
+           creatureGfxes.add(new CreatureGfx(c, service.calculateColor(c)));
         }
         this.creatureGfxs = creatureGfxes;
 
@@ -46,18 +47,81 @@ public class WorldGfx extends JPanel {
     }
 
     public void tick() {
+        ArrayList<CreatureGfx> deadCreatures = new ArrayList<>();
+        ArrayList<CreatureGfx> newCreatues = new ArrayList<>();
         for (CreatureGfx creatureGfx : creatureGfxs) {
-            service.calculateOutputs(creatureGfx.getCreature());
-            System.out.println(world.getCreatures().get(0).equals(creatureGfx.getCreature()));
-            if (creatureGfx.getCreature().getLeftMuscle().getOutput() > 0) {
-                creatureGfx.tick(creatureGfx.getCreature().getLeftMuscle().getOutput(), creatureGfx.getCreature().getRectilinearMuscle().getOutput());
-            } else {
-                creatureGfx.tick(creatureGfx.getCreature().getRightMuscle().getOutput(), creatureGfx.getCreature().getRectilinearMuscle().getOutput());
+            ArrayList<FoodGfx> eatenFood = new ArrayList<>();
+            for (FoodGfx food : foodGfxs) {
+                if (canEat(creatureGfx,food)) {
+                    eatFood(creatureGfx, food.getFood());
+                    eatenFood.add(food);
+                }
             }
+            removeFood(eatenFood);
+            if (creatureGfx.getCreature().getAge() == birthAge) {
+                newCreatues.add(giveBirth(creatureGfx.getCreature()));
+            }
+            if (creatureGfx.getCreature().getStarvationIndex() > 500*10) {
+               deadCreatures.add(creatureGfx);
+            }
+
+            service.calculateOutputs(creatureGfx.getCreature());
+            double diff = creatureGfx.getCreature().getLeftMuscle().getOutput() - creatureGfx.getCreature().getRightMuscle().getOutput();
+            creatureGfx.tick(diff*5, creatureGfx.getCreature().getRectilinearMuscle().getOutput());
             creatureGfx.getCreature().getLeftAntenna().setInput(Math.random());
             creatureGfx.getCreature().getRightAntenna().setInput(Math.random());
+            creatureGfx.getCreature().getEyes().setInput(Math.random());
+            int newStarvationIndex = creatureGfx.getCreature().getStarvationIndex() + 5;
+            creatureGfx.getCreature().setStarvationIndex(newStarvationIndex);
+            creatureGfx.getCreature().incrementAge();
+            if (Math.random() > 0.98) {
+               addNewFood();
+            }
         }
+        removeCreature(deadCreatures);
+        creatureGfxs.addAll(newCreatues);
         //repaint(creatureGfx.getBounds());
         repaint();
+    }
+
+    private CreatureGfx giveBirth(Creature creature) {
+        MultiLayerNetwork net = creature.getBrain().getNet().clone();
+        service.mutate(net);
+        Creature newCreature = service.createCreature(counter++);
+        System.out.println("Creature " + creature.getId() + " gave birth!");
+        return new CreatureGfx(newCreature, service.calculateColor(newCreature));
+    }
+
+    private void eatFood(CreatureGfx creatureGfx, Food food) {
+        System.out.println(creatureGfx.getCreature().getId() + " ate food!");
+        int starvationIndatex = creatureGfx.getCreature().getStarvationIndex() - food.getFoodValue();
+        creatureGfx.getCreature().setStarvationIndex(starvationIndatex);
+    }
+
+    private boolean canEat(CreatureGfx creatureGfx, FoodGfx food) {
+        return creatureGfx.intersects(food);
+    }
+    private void removeCreature(ArrayList<CreatureGfx> creatureGfxes) {
+        creatureGfxes.forEach(d -> {
+            System.out.println("Create " + d.getCreature().getId() + " is dead");
+            world.removeCreature(d.getCreature());
+            Creature creature = service.createCreature(counter++);
+            world.addCreature(creature);
+            creatureGfxs.add(new CreatureGfx(creature, service.calculateColor(creature)));
+        });
+
+        creatureGfxs.removeAll(creatureGfxes);
+    }
+    private void removeFood(ArrayList<FoodGfx> food) {
+        food.forEach(f -> {
+            world.removeFood(f.getFood());
+            foodGfxs.remove(f);
+        });
+    }
+
+    private void addNewFood() {
+        Food f = new Food(60);
+        world.addFood(f);
+        foodGfxs.add(new FoodGfx(f));
     }
 }

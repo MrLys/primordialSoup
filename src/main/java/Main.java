@@ -4,6 +4,10 @@ import model.World;
 
 import gfx.SimulationWindow;
 import gfx.WorldGfx;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.api.preprocessor.NormalizerMinMaxScaler;
+import org.nd4j.linalg.factory.Nd4j;
 import service.CreatureService;
 
 import javax.swing.*;
@@ -11,20 +15,26 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Random;
 
 public class Main {
 
+
     public static void main(String[] args) {
+        //new Main().test();
         CreatureService service = new CreatureService();
         //service.printInitialWeights();
+        ArrayList<Creature> creatures = new ArrayList<>();
+        ArrayList<Food> foodList = new ArrayList<>();
         Creature creature1 = service.createCreature(1);
         Creature creature2 = service.createCreature(2);
-        List<Creature> creatures = Arrays.asList(creature1, creature2);
-        Food food = new Food();
-        List<Food> foodList = Arrays.asList(food);
-        World world = new World(creatures,foodList);
+        //Creature creature2 = service.createCreature(2);
+        creatures.add(creature1);
+        creatures.add(creature2);
+        foodList.add(new Food(50));
+        foodList.add(new Food(50));
+        foodList.add(new Food(50));
+        World world = new World(creatures, foodList);
         WorldGfx worldGfx = new WorldGfx(world, service);
 
         SimulationTickListener tickListener = new SimulationTickListener(worldGfx);
@@ -48,9 +58,16 @@ public class Main {
             }
         });
 
-        new Timer(100, tickListener).start();
+        new Timer(50, tickListener).start();
+    }
+
+    private void test() {
+        CreatureService service = new CreatureService();
+        Creature c = service.createCreature(0);
+        service.calculateColor(c);
     }
 }
+
 
 class SimulationTickListener implements ActionListener {
     private WorldGfx worldGfx;

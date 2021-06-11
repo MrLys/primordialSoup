@@ -4,6 +4,7 @@ import model.Food;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Random;
 
 public class FoodGfx {
@@ -22,5 +23,13 @@ public class FoodGfx {
     public void draw(Graphics2D g2d) {
         g2d.setPaint(color);
         g2d.fill(body);
+    }
+
+    public Food getFood() {
+        return food;
+    }
+
+    public Rectangle2D getBody() {
+        return this.body.getBounds2D();
     }
 }

@@ -15,30 +15,56 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class CreatureService {
     private static final int RIGHT_ARM = 0;
     private static final int LEFT_ARM = 1;
     private static final int BACK_ARM = 2;
     private static final int layers = 2;
-    private static final double[][] w_0 = new double[][]{
-        new double[]{0.1659,   -0.6131, -0.3444},
-        new double[]{ -0.6771,    0.3848,   -0.0784},
-    new double[]{-0.1544,   -1.1473,   -0.6404}};
-    private static final String w_0_key = "0_W";
-    private static final double[][] w_1 = new double[][]{
-        new double[]{ -0.7643,   -0.0471,    0.8813},
-        new double[]{ 0.2855,   -0.1222,   -0.6253},
-        new double[]{0.0746,   -0.6142,   -0.1725}};
-    private static final String w_1_key = "1_W";
-    private static final INDArray b_0 = Nd4j.create(new double[][]{
-        new double[]{ 0,         0,         0}});
-    private static final String b_0_key = "0_b";
-    private static final INDArray b_1 = Nd4j.create(new double[][]{
-        new double[]{ 0,         0,         0}});
-    private static final String b_1_key = "1_b";
+    private static final INDArray ind0_W= Nd4j.create(new double[][]{
+        new double[]{0.9136550426483154, 0.2254105508327484, 0.05268868803977966},
+        new double[]{-0.4886256158351898, -0.17270053923130035, 0.5277238488197327},
+        new double[]{-1.2825582027435303, -0.17129941284656525, -0.07840892672538757}});
+    private static final INDArray ind0_b= Nd4j.create(new double[][]{
+        new double[]{0.0, 0.0, 0.0}});
+    private static final INDArray ind1_W= Nd4j.create(new double[][]{
+        new double[]{-0.2528708279132843, -0.3493185043334961, 1.0037107467651367},
+        new double[]{-0.025605902075767517, 0.3954494595527649, -0.07494216412305832},
+        new double[]{0.02212219499051571, -1.0447677373886108, 0.3801596760749817}});
+    private static final INDArray ind1_b= Nd4j.create(new double[][]{
+        new double[]{0.0, 0.0, 0.0}});
+
+    private static final Map<String, INDArray> keys = new HashMap<>();
+    static {
+        keys.put("0_W", ind0_W);
+        keys.put("0_b", ind0_b);
+        keys.put("1_W", ind1_W);
+        keys.put("1_b", ind1_b);
+    }
+    //private static final double[][] w_0 = new double[][]{
+    //    new double[]{0.1659,   -0.6131, -0.3444},
+    //    new double[]{ -0.6771,    0.3848,   -0.0784},
+    //new double[]{-0.1544,   -1.1473,   -0.6404}};
+    //private static final String w_0_key = "0_W";
+    //private static final double[][] w_1 = new double[][]{
+    //    new double[]{ -0.7643,   -0.0471,    0.8813},
+    //    new double[]{ 0.2855,   -0.1222,   -0.6253},
+    //    new double[]{0.0746,   -0.6142,   -0.1725}};
+    //private static final String w_1_key = "1_W";
+    //private static final INDArray b_0 = Nd4j.create(new double[][]{
+    //    new double[]{ 0,         0,         0}});
+    //private static final String b_0_key = "0_b";
+    //private static final INDArray b_1 = Nd4j.create(new double[][]{
+    //    new double[]{ 0,         0,         0}});
+    //private static final String b_1_key = "1_b";
+    //private static final Map<String, INDArray> keys = new HashMap<>();
+    //static {
+    //   keys.put(w_0_key, Nd4j.create(w_0));
+    //    keys.put(b_0_key, b_0);
+    //    keys.put(w_0_key, Nd4j.create(w_0));
+    //    keys.put(w_0_key, Nd4j.create(w_0));
+    //}
 
     private MultiLayerConfiguration getConf() {
         return new NeuralNetConfiguration.Builder()
@@ -55,55 +81,45 @@ public class CreatureService {
         net.init();
         Iterator paramap_iterator = net.paramTable().entrySet().iterator();
 
+        StringBuilder keyBuilder = new StringBuilder();
         while(paramap_iterator.hasNext()) {
             Map.Entry<String, INDArray> me = (Map.Entry<String, INDArray>) paramap_iterator.next();
-            StringBuilder keyBuilder = new StringBuilder();
-            String key = me.getKey();
-            if (key.contains("b")) {
-                keyBuilder.append("private static final INDArray ");
-                keyBuilder.append(me.getKey());
-                keyBuilder.append("= Nd4j.create(new double[][]{\n");
-                double[][] value = me.getValue().toDoubleMatrix();
-                for (int i = 0; i < value.length; i++) {
-                    double[] doubles = value[i];
-                    keyBuilder.append("new double[]{");
-                    for (int j = 0; j < doubles.length; j++) {
-                        keyBuilder.append(doubles[j]);
-                        if (j + 1  != doubles.length) {
-                            keyBuilder.append(", ");
-                        }
-                    }
-                    keyBuilder.append("}");
-                    if (i + 1 != value.length) {
-                        keyBuilder.append(",\n");
+            keyBuilder.append("private static final INDArray ");
+            keyBuilder.append("ind");
+            keyBuilder.append(me.getKey());
+            keyBuilder.append("= Nd4j.create(new double[][]{\n");
+            double[][] value = me.getValue().toDoubleMatrix();
+            for (int i = 0; i < value.length; i++) {
+                double[] doubles = value[i];
+                keyBuilder.append("new double[]{");
+                for (int j = 0; j < doubles.length; j++) {
+                    keyBuilder.append(doubles[j]);
+                    if (j + 1  != doubles.length) {
+                        keyBuilder.append(", ");
                     }
                 }
-                keyBuilder.append("});");
-                System.out.println(keyBuilder);
-            } else {
-                keyBuilder.append("private static final double[][] ");
-                keyBuilder.append(me.getKey());
-                keyBuilder.append("= new double[][]{\n");
-                double[][] value = me.getValue().toDoubleMatrix();
-                for (int i = 0; i < value.length; i++) {
-                    double[] doubles = value[i];
-                    keyBuilder.append("new double[]{");
-                    for (int j = 0; j < doubles.length; j++) {
-                        keyBuilder.append(doubles[j]);
-                        if (j + 1  != doubles.length) {
-                           keyBuilder.append(", ");
-                        }
-                    }
-                    keyBuilder.append("}");
-                    if (i + 1 != value.length) {
-                        keyBuilder.append(",\n");
-                    }
+                keyBuilder.append("}");
+                if (i + 1 != value.length) {
+                    keyBuilder.append(",\n");
                 }
-                keyBuilder.append("};");
-                System.out.println(keyBuilder);
             }
-
+            keyBuilder.append("});\n");
         }
+        keyBuilder.append("\n");
+        keyBuilder.append("private static final Map<String, INDArray> keys = new HashMap<>();\n");
+        keyBuilder.append("static {\n");
+        for (String key : net.paramTable().keySet()) {
+            keyBuilder.append("       keys.put(");
+            keyBuilder.append("\"");
+            keyBuilder.append(key);
+            keyBuilder.append("\"");
+            keyBuilder.append(", ind");
+            keyBuilder.append(key);
+            keyBuilder.append(");\n");
+        }
+        keyBuilder.append("}\n");
+        System.out.println(keyBuilder);
+
     }
     private int selectRandomNeuron(double rnd) {
         if (rnd > 0.33 && rnd < 0.66) {
@@ -114,45 +130,33 @@ public class CreatureService {
             return 2;
         }
     }
+
     private Brain createBrain() {
         MultiLayerConfiguration conf = getConf();
         MultiLayerNetwork net = new MultiLayerNetwork(conf);
         net.init();
-        if (Math.random() > 0.9) {
-            System.out.println("mutation!");
-            NormalizerMinMaxScaler scaler = new NormalizerMinMaxScaler();
-            int neuron = selectRandomNeuron(Math.random());
-            double mutation = Math.random() * 10;
-            INDArray w0 = Nd4j.create(w_0.clone());
-            INDArray w1 = Nd4j.create(w_1.clone());
-            if (Math.random() > 0.5) {
-
-                // first layer
-                INDArray array = w0;
-                //System.out.println("mutating first layer from " + array);
-                INDArray neurons = array.getRow(neuron);
-                neurons = neurons.muli(mutation);
-                //scaler.setFeatureStats(Nd4j.create(new double[]{neurons.minNumber().doubleValue()}), Nd4j.create(new double[]{neurons.maxNumber().doubleValue()}));
-                //scaler.transform(array);
-                System.out.println("mutating first layer to " + array);
-            } else {
-                // second layer
-
-                INDArray array = w1;
-                //System.out.println("mutating second layer from " + array);
-                INDArray neurons = array.getRow(neuron);
-                neurons = neurons.muli(mutation);
-                //scaler.setFeatureStats(Nd4j.create(new double[]{neurons.minNumber().doubleValue()}), Nd4j.create(new double[]{neurons.maxNumber().doubleValue()}));
-                //scaler.transform(array);
-                //System.out.println("mutating second layer to " + array);
-
-            }
-            net.setParam(w_0_key, w0);
-            net.setParam(b_0_key, b_0);
-            net.setParam(w_1_key, w1);
-            net.setParam(b_1_key, b_1);
-        }
+        mutate(net, keys);
         return new Brain(net);
+    }
+
+    public void mutate(MultiLayerNetwork net) {
+        mutate(net, net.paramTable());
+    }
+
+    public void mutate(MultiLayerNetwork net, Map<String, INDArray> paramTable) {
+        Random rand = new Random();
+        if (Math.random() > 0.5) {
+            System.out.println("mutation!");
+            ArrayList<String> keys = new ArrayList<>(paramTable.keySet());
+            String key = keys.get(rand.nextInt(paramTable.keySet().size()));
+            while (key.contains("b_")) {
+                key = keys.get(rand.nextInt(net.paramTable().keySet().size()));
+            }
+            INDArray array = net.paramTable().get(key);
+            double mutation = Math.random() * 10;
+            array.getRow(rand.nextInt(array.rows())).muli(mutation);
+            net.setParam(key, array);
+        }
     }
 
     private Eyes createEyes() {
@@ -203,11 +207,6 @@ public class CreatureService {
     private INDArray getSensoryData(Creature creature) {
         return Nd4j.create(new double[][]{new double[]{creature.getLeftAntenna().getInput(), creature.getRightAntenna().getInput(), creature.getEyes().getInput()}});
     }
-    private double calculateRotationalMuscleData(INDArray indArray) {
-        INDArray right = indArray.getColumn(RIGHT_ARM);
-        INDArray left = indArray.getColumn(LEFT_ARM);
-        return right.getDouble(0) - left.getDouble(0);
-    }
 
     private double calculateRectilinearMuscleData(INDArray indArray) {
         INDArray back = indArray.getColumn(BACK_ARM);
@@ -219,17 +218,31 @@ public class CreatureService {
         INDArray indArray = getSensoryData(creature);
         INDArray output = net.output(indArray);
 
-        double rotationAngle = calculateRotationalMuscleData(output);
-        RotationalMuscle muscleToWork;
-        if (rotationAngle > 0) {
-            muscleToWork = creature.getRightMuscle();
-        } else {
-            muscleToWork = creature.getLeftMuscle();
-        }
-        muscleToWork.setOutput(rotationAngle);
+        creature.getLeftMuscle().setOutput(output.getColumn(LEFT_ARM).getDouble());
+        creature.getRightMuscle().setOutput(output.getColumn(RIGHT_ARM).getDouble());
+
         RectilinearMuscle forwardMuscle = creature.getRectilinearMuscle();
         forwardMuscle.setOutput(calculateRectilinearMuscleData(output));
-        System.out.println(creature.getRightMuscle().getOutput());
-        System.out.println(creature.getLeftMuscle().getOutput());
+    }
+
+    public int[] calculateColor(Creature creature) {
+        MultiLayerNetwork net = creature.getBrain().getNet();
+
+        Iterator paramap_iterator = net.paramTable().entrySet().iterator();
+        INDArray colorArr = null;
+        while(paramap_iterator.hasNext()) {
+            Map.Entry<String, INDArray> me = (Map.Entry<String, INDArray>) paramap_iterator.next();
+            if (colorArr == null) {
+                colorArr = me.getValue();
+            } else {
+                colorArr.add(me.getValue());
+            }
+        }
+        INDArray a1 = colorArr.getRow(0).add(colorArr.getRow(1)).add(colorArr.getRow(0));
+        return Arrays.stream(a1.toDoubleVector()).mapToInt(this::sig).toArray();
+
+    }
+    public int sig(double x) {
+        return (int) ((1 / (1 + Math.exp(-x)))*255);
     }
 }

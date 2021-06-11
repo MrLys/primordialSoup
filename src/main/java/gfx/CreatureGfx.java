@@ -38,12 +38,13 @@ public class CreatureGfx {
 
     private final BasicStroke limbsStroke = new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
     private final Color limbsColor = new Color(100, 200, 100);
-    private final Color bodyColor = new Color(255, 100, 100);
+    private final Color bodyColor;
 
     Random rand = new Random();
 
-    public CreatureGfx(Creature creature) {
+    public CreatureGfx(Creature creature, int[] colors) {
         this.creature = creature;
+       this.bodyColor = new Color(colors[0], colors[1], colors[2]);
 
         body = new Ellipse2D.Double(rand.nextInt(1200), rand.nextInt(800), 30, 30);
 
@@ -166,5 +167,9 @@ public class CreatureGfx {
 
     public Creature getCreature() {
         return creature;
+    }
+
+    public boolean intersects(FoodGfx foodGfx) {
+        return this.body.intersects(foodGfx.getBody());
     }
 }

@@ -9,6 +9,8 @@ public class Creature {
     private final RectilinearMuscle rectilinearMuscle;
     private final RotationalMuscle rightMuscle;
     private final RotationalMuscle leftMuscle;
+    private int starvationIndex = 0; /* 1000 = death */
+    private long age = 0;
     private final int id;
     public static final String saveLocation = "src/main/resources/creature";
 
@@ -72,5 +74,21 @@ public class Creature {
             ", leftMuscle=" + leftMuscle +
             ", id=" + id +
             '}';
+    }
+
+    public int getStarvationIndex() {
+        return starvationIndex;
+    }
+
+    public void setStarvationIndex(int starvationIndex) {
+        this.starvationIndex = starvationIndex;
+    }
+
+    public void incrementAge() {
+        this.age += 1;
+    }
+
+    public long getAge() {
+        return age;
     }
 }

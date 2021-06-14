@@ -93,7 +93,7 @@ public class WorldGfx extends JPanel {
     }
 
     private void eatFood(CreatureGfx creatureGfx, Food food) {
-        System.out.println(creatureGfx.getCreature().getId() + " ate food!");
+        //System.out.println(creatureGfx.getCreature().getId() + " ate food!");
         int starvationIndatex = creatureGfx.getCreature().getStarvationIndex() - food.getFoodValue();
         creatureGfx.getCreature().setStarvationIndex(starvationIndatex);
     }
